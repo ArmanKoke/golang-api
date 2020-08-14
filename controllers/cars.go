@@ -10,27 +10,27 @@ import (
 	"net/http"
 )
 
+const idParam = "id"
+
 func HandleCars(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		GetAll(w, r)
+		// only way to check for raw query param
+		if rawQueryHasParam(r, idParam) {
+			Get(w, r)
+		} else {
+			GetAll(w, r)
+		}
 	case "POST":
 		Save(w, r)
-	}
-}
-
-func HandleCarsWithId(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case "GET":
-		GetAll(w, r)
-	case "PUT":
+	case "PUT": //only nominal for now
 		Save(w, r)
 	case "DELETE":
 		Delete(w, r)
 	}
 }
 
-func GetAll(w http.ResponseWriter, r *http.Request){
+func GetAll(w http.ResponseWriter, r *http.Request) {
 	w = utils.AddHeaders(w)
 
 	err := json.NewEncoder(w).Encode(db.GetAll())
@@ -39,10 +39,10 @@ func GetAll(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func Get(w http.ResponseWriter, r *http.Request){
+func Get(w http.ResponseWriter, r *http.Request) {
 	w = utils.AddHeaders(w)
 
-	id := utils.ConvertStringId(utils.ProcessGorillaRequest(r, "id"))
+	id := utils.ConvertStringId(utils.ProcessRawQuery(r, idParam))
 
 	err := json.NewEncoder(w).Encode(db.Get(id))
 	if err != nil {
@@ -50,7 +50,7 @@ func Get(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func Save(w http.ResponseWriter, r *http.Request){
+func Save(w http.ResponseWriter, r *http.Request) {
 	w = utils.AddHeaders(w)
 
 	if r.Header.Get("Content-Type") != "" {
@@ -75,10 +75,10 @@ func Save(w http.ResponseWriter, r *http.Request){
 
 }
 
-func Delete(w http.ResponseWriter, r *http.Request){
+func Delete(w http.ResponseWriter, r *http.Request) {
 	w = utils.AddHeaders(w)
 
-	id := utils.ConvertStringId(utils.ProcessGorillaRequest(r, "id"))
+	id := utils.ConvertStringId(utils.ProcessRawQuery(r, idParam))
 
 	a := r.Body
 	fmt.Print(a)
@@ -87,4 +87,9 @@ func Delete(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		log.Printf("Error in Delete method: %s", err)
 	}
+}
+
+//not the best way but works for now
+func rawQueryHasParam(r *http.Request, param string) bool {
+	return len(r.URL.Query()[param]) != 0
 }

@@ -1,22 +1,22 @@
 package utils
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"strconv"
 )
 
-func ProcessGorillaRequest (r *http.Request, fieldName string) string {
-	params := mux.Vars(r)
-	return params[fieldName]
+//should handle case when param is empty
+func ProcessRawQuery(r *http.Request, fieldName string) string {
+	return r.URL.Query()[fieldName][0]
 }
 
-func ConvertStringId (id string) uint32 {
+func ConvertStringId(id string) uint32 {
 	converted := parseUint(id, 10, 32)
 	return uint32(converted)
 }
 
+//for now id is not incremented but better make it so
 func ConvertId(r *http.Request) uint32 {
 	id := r.FormValue("id")
 	return ConvertStringId(id)
