@@ -3,7 +3,7 @@
 For now implemented for cars only.
 For routing used basic http library tried gorilla/mux but did not like it
 
-##Routes
+## Routes
 
 | Method    | Route                         | Content-Type              |
 |-----------|-------------------------------|------------------|
@@ -15,7 +15,7 @@ For routing used basic http library tried gorilla/mux but did not like it
 | GET       | /statuses                      | no       |
 | POST      | /statuses                      | body(form-data)       |
 
-###Minuses
+### Minuses
 - Missed some edge cases (e.g. check for empty param, form-data etc)
 - No validation whatsoever
 - In-memory storage limited to 10 records
