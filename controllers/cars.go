@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"items_api/db"
 	"items_api/models"
 	"items_api/utils"
@@ -11,6 +10,7 @@ import (
 )
 
 const idParam = "id"
+const statusParam = "status"
 
 func HandleCars(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -41,10 +41,17 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 
 func Get(w http.ResponseWriter, r *http.Request) {
 	w = utils.AddHeaders(w)
+	//not good way to do it but leave for demo
+	var body interface{}
 
 	id := utils.ConvertStringId(utils.ProcessRawQuery(r, idParam))
 
-	err := json.NewEncoder(w).Encode(db.Get(id))
+	if rawQueryHasParam(r, statusParam) {
+		body = db.GetWithStatus(id)
+	} else {
+		body = db.Get(id)
+	}
+	err := json.NewEncoder(w).Encode(body)
 	if err != nil {
 		log.Printf("Error in Get method: %s", err)
 	}
@@ -80,9 +87,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	id := utils.ConvertStringId(utils.ProcessRawQuery(r, idParam))
 
-	a := r.Body
-	fmt.Print(a)
-	fmt.Print(r.Method)
 	err := json.NewEncoder(w).Encode(db.Delete(id))
 	if err != nil {
 		log.Printf("Error in Delete method: %s", err)

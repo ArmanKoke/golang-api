@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"items_api/controllers"
 	"log"
@@ -18,19 +17,10 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func handleRequests() {
 	http.HandleFunc("/", homePage)
 	http.HandleFunc("/cars", controllers.HandleCars)
-
-	//carsRoutes()
+	http.HandleFunc("/statuses", controllers.HandleStatuses)
 
 	fmt.Println("http://localhost:10001") //for convenience
 	log.Fatal(http.ListenAndServe(":10001", nil))
-}
-
-func carsRoutes(w http.ResponseWriter, r *http.Request) {
-	fmt.Print("sadasd")
-	err := json.NewEncoder(w).Encode(r)
-	if err != nil {
-		log.Printf("Error in Get method: %s", err)
-	}
 }
 
 func main() {
